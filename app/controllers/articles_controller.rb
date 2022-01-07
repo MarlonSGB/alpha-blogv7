@@ -18,11 +18,13 @@ class ArticlesController < ApplicationController
 
   def create
     @article = Article.new(params.require(:article).permit(:title, :description))
-    if @article.save
-     flash[:notice] = "Article was created sucessfully."
-     redirect_to @article
-    else
-     render 'new'
+    respond_to do |format|
+      if @article.save
+       flash[:notice] = "Article was created sucessfully."
+       format.html { redirect_to @article }
+      else
+       format.html { render 'new', status: :unprocessable_entity }
+      end
     end
   end
 
@@ -34,6 +36,13 @@ class ArticlesController < ApplicationController
     else
       render 'edit'
     end
+
+  end
+
+  def destroy
+    @article = Article.find(params[:id])
+    @article.destroy
+    redirect_to articles_path
   end
 
 end
